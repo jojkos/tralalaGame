@@ -26,7 +26,7 @@
         }
         .game-container {
             display: flex;
-            flex-direction: row; /* Always row layout */
+            flex-direction: row; 
             gap: 1.5rem;
             width: 100%;
             max-width: 1200px;
@@ -36,7 +36,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             margin-top: 1rem;
         }
-        .main-game-area { /* Left column */
+        .main-game-area { 
             flex: 3;
             display: flex;
             flex-direction: column;
@@ -84,19 +84,34 @@
             color: #FFD700;
             margin-top: 0.75rem;
         }
-        .upgrades-panel { /* Right column */
+        .right-panel { /* Container for upgrades and leaderboard */
             flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-height: calc(100vh - 160px); /* Adjust based on overall layout */
+        }
+        .upgrades-panel { 
             background-color: #4A235A;
             padding: 1.5rem;
             border-radius: 0.75rem;
             overflow-y: auto;
-            max-height: calc(100vh - 200px); /* Adjusted for mute button */
             box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
+            flex-shrink: 1; /* Allow shrinking */
+            min-height: 200px; /* Ensure it has some height */
         }
-        .upgrades-title {
+        .leaderboard-panel {
+            background-color: #522e62; /* Slightly different shade for distinction */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-y: auto;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
+            flex-grow: 1; /* Allow growing to fill space */
+        }
+        .upgrades-title, .leaderboard-title {
             text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
-        .upgrade-button {
+        .upgrade-button, .leaderboard-submit-button {
             background-color: #7D3C98;
             color: white;
             border: 1px solid #C39BD3;
@@ -107,17 +122,18 @@
             width: 100%;
             margin-bottom: 0.85rem;
             text-align: left;
-            display: flex;
-            flex-direction: column;
             box-shadow: 0 3px 7px rgba(0,0,0,0.2);
         }
-        .upgrade-button:hover {
+        .upgrade-button { display: flex; flex-direction: column; }
+        .leaderboard-submit-button { text-align: center; }
+
+        .upgrade-button:hover, .leaderboard-submit-button:hover {
             background-color: #9B59B6;
             border-color: #F4ECF7;
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0,0,0,0.3);
         }
-        .upgrade-button:disabled {
+        .upgrade-button:disabled, .leaderboard-submit-button:disabled {
             background-color: #512E5F;
             border-color: #6C3483;
             cursor: not-allowed;
@@ -125,88 +141,43 @@
             transform: none;
             box-shadow: none;
         }
-        .upgrade-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
+        .upgrade-info { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .upgrade-name-desc strong { color: #FAD7A0; }
         .upgrade-name-desc .text-xs { color: #EAECEE; }
         .upgrade-cost { font-weight: bold; margin-left: 1rem; white-space: nowrap; color: #FDFEFE; }
         .upgrade-level { font-size: 0.8rem; opacity: 0.8; color: #D2B4DE; }
         .currency-symbol { font-size: 1.2em; }
-        .click-effect {
-            position: absolute;
-            font-size: 1.75rem;
-            font-weight: bold;
-            color: #F8C471;
-            pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards;
-            text-shadow: 0 0 6px black, 0 0 8px #333;
-            z-index: 1001;
+        
+        .leaderboard-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.95rem;
         }
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-60px) scale(1.2); opacity: 0; }
+        .leaderboard-entry:last-child { border-bottom: none; }
+        .leaderboard-rank { font-weight: bold; color: #FFD700; min-width: 25px; }
+        .leaderboard-name { flex-grow: 1; margin-left: 0.5rem; color: #F0F0F0; }
+        .leaderboard-score { font-weight: bold; color: #ABEBC6; }
+        .leaderboard-input-group { margin-top: 1rem; display: flex; gap: 0.5rem; }
+        .leaderboard-input-group input {
+            flex-grow: 1; padding: 0.5rem; border-radius: 0.3rem; border: 1px solid #C39BD3; background-color: rgba(255,255,255,0.1); color: white;
         }
-        .message-box {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            background-color: #D35400;
-            color: white;
-            padding: 12px 22px;
-            border-radius: 6px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.25);
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-            visibility: hidden;
-            transform: translateX(-50%) translateY(20px);
-        }
-        .message-box.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
-        }
-        .upgrades-panel::-webkit-scrollbar { width: 10px; }
-        .upgrades-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
-        .upgrades-panel::-webkit-scrollbar-thumb { background: #9B59B6; border-radius: 10px; border: 2px solid #4A235A; }
-        .upgrades-panel::-webkit-scrollbar-thumb:hover { background: #8E44AD; }
-        .buy-me-a-coffee {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            background-color: #FFDD00;
-            color: #000000;
-            padding: 8px 15px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: background-color 0.2s;
-            z-index: 100;
-        }
+        .leaderboard-input-group input::placeholder { color: #b0b0b0; }
+
+
+        .click-effect { position: absolute; font-size: 1.75rem; font-weight: bold; color: #F8C471; pointer-events: none; animation: floatUp 0.8s ease-out forwards; text-shadow: 0 0 6px black, 0 0 8px #333; z-index: 1001; }
+        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-60px) scale(1.2); opacity: 0; } }
+        .message-box { position: fixed; bottom: 20px; left: 50%; background-color: #D35400; color: white; padding: 12px 22px; border-radius: 6px; box-shadow: 0 3px 12px rgba(0,0,0,0.25); z-index: 1000; opacity: 0; transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; visibility: hidden; transform: translateX(-50%) translateY(20px); }
+        .message-box.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+        .upgrades-panel::-webkit-scrollbar, .leaderboard-panel::-webkit-scrollbar { width: 10px; }
+        .upgrades-panel::-webkit-scrollbar-track, .leaderboard-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
+        .upgrades-panel::-webkit-scrollbar-thumb, .leaderboard-panel::-webkit-scrollbar-thumb { background: #9B59B6; border-radius: 10px; border: 2px solid #4A235A; }
+        .upgrades-panel::-webkit-scrollbar-thumb:hover, .leaderboard-panel::-webkit-scrollbar-thumb:hover { background: #8E44AD; }
+        .buy-me-a-coffee { position: fixed; bottom: 15px; left: 15px; background-color: #FFDD00; color: #000000; padding: 8px 15px; border-radius: 20px; text-decoration: none; font-size: 0.9rem; font-weight: 600; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: background-color 0.2s; z-index: 100; }
         .buy-me-a-coffee:hover { background-color: #FFE64D; }
-        .mute-button {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            background-color: #7D3C98;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            border: 1px solid #C39BD3;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 100;
-        }
-        .mute-button:hover {
-            background-color: #9B59B6;
-        }
+        .mute-button { position: fixed; top: 15px; right: 15px; background-color: #7D3C98; color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; border: 1px solid #C39BD3; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 100; }
+        .mute-button:hover { background-color: #9B59B6; }
     </style>
 </head>
 <body>
@@ -226,23 +197,75 @@
             </div>
         </div>
 
-        <div class="upgrades-panel">
-            <h2 class="text-2xl font-semibold mb-4 text-yellow-200 text-center upgrades-title">Upgrades</h2>
-            <div id="upgradesContainer">
+        <div class="right-panel">
+            <div class="upgrades-panel">
+                <h2 class="text-2xl font-semibold mb-4 text-yellow-200 text-center upgrades-title">Upgrades</h2>
+                <div id="upgradesContainer">
+                    </div>
+            </div>
+            <div class="leaderboard-panel">
+                <h2 class="text-2xl font-semibold mb-4 text-yellow-200 text-center leaderboard-title">Leaderboard</h2>
+                <div id="leaderboardDisplay"><p class="text-center text-gray-400">Loading leaderboard...</p></div>
+                <div class="leaderboard-input-group">
+                    <input type="text" id="playerNameInput" placeholder="Enter Your Name" maxlength="20">
+                    <button id="submitScoreButton" class="leaderboard-submit-button text-sm p-2">Submit Score</button>
                 </div>
+            </div>
         </div>
     </div>
 
     <div id="messageBox" class="message-box"></div>
     <a href="https://buymeacoffee.com/jojkos" target="_blank" rel="noopener noreferrer" class="buy-me-a-coffee">☕ Buy me a coffee</a>
 
-    <script>
+    <script type="module">
+        // Firebase SDK imports (IMPORTANT: You'll need to set up your own Firebase project)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDocs, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+
+        // --- Firebase Configuration ---
+        // IMPORTANT: REPLACE THIS WITH YOUR OWN FIREBASE PROJECT CONFIGURATION
+        // You can get this from the Firebase console: Project settings > General > Your apps > SDK setup and configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyAG-fkocVppD9PUKw2Y0HU0q0mSG3B3jZo",
+          authDomain: "brainrotclickerleaderboard.firebaseapp.com",
+          projectId: "brainrotclickerleaderboard",
+          storageBucket: "brainrotclickerleaderboard.firebasestorage.app",
+          messagingSenderId: "621809902994",
+          appId: "1:621809902994:web:4ddc238f0be3d857978d4b"
+        };
+        // IMPORTANT: Use a unique ID for your game instance if hosting publicly.
+        // This helps keep data separate if multiple people use this code with their own Firebase.
+        const GAME_INSTANCE_ID = "brainrot-clicker-public-leaderboard"; // Or your unique ID
+
+        // Initialize Firebase
+        let app;
+        let db;
+        let auth;
+        let userId = null; // Firebase User ID
+        let isFirebaseReady = false;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            setLogLevel('debug'); // For development, can be 'error' for production
+            console.log("Firebase initialized (pending auth).");
+            isFirebaseReady = true;
+        } catch (e) {
+            console.error("Error initializing Firebase. Leaderboard will not work.", e);
+            showTemporaryMessage("Leaderboard service connection failed. Check console.");
+            document.getElementById("leaderboardDisplay").innerHTML = '<p class="text-center text-red-400">Leaderboard unavailable.</p>';
+        }
+
+
         // Game state variables
         let score = 0;
         let clickPower = 1;
         let bps = 0;
 
-        // Initial upgrades definition
         const initialUpgrades = {
             boostClick: { id: 'boostClick', name: "Fast Fingers", description: "+1 🧠 per Click", baseCost: 10, power: 1, type: "click", level: 0, icon: '👆' },
             autoClick: { id: 'autoClick', name: "Clicker Bot", description: "+1 🧠 per Second", baseCost: 50, power: 1, type: "bps", level: 0, icon: '🤖' },
@@ -261,263 +284,230 @@
         const upgradesContainer = document.getElementById('upgradesContainer');
         const messageBox = document.getElementById('messageBox');
         const muteButton = document.getElementById('muteButton');
+        const leaderboardDisplay = document.getElementById('leaderboardDisplay');
+        const playerNameInput = document.getElementById('playerNameInput');
+        const submitScoreButton = document.getElementById('submitScoreButton');
 
         // --- Audio Setup (Tone.js) ---
         let audioInitialized = false;
         let soundsMuted = false;
+        const clickSynth = new Tone.Synth({ oscillator: { type: 'triangle8' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.05, release: 0.2 }, volume: -10 }).toDestination();
+        const musicSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'amsine', harmonicity: 1.2 }, envelope: { attack: 0.05, decay: 0.2, sustain: 0.1, release: 0.5 }, volume: -20 }).toDestination();
+        const melody = [ { time: '0:0', note: 'C4', duration: '8n' }, { time: '0:1', note: 'E4', duration: '8n' }, { time: '0:2', note: 'G4', duration: '8n' }, { time: '0:3', note: 'E4', duration: '8n' }, { time: '1:0', note: 'D4', duration: '8n' }, { time: '1:1', note: 'F4', duration: '8n' }, { time: '1:2', note: 'A4', duration: '8n' }, { time: '1:3', note: 'F4', duration: '8n' }, { time: '2:0', note: 'C4', duration: '4n' }, { time: '2:2', note: 'G3', duration: '4n' }, { time: '3:0', note: 'E4', duration: '2n' }, ];
+        const musicPart = new Tone.Part((time, value) => { musicSynth.triggerAttackRelease(value.note, value.duration, time); }, melody);
+        musicPart.loop = true; musicPart.loopEnd = '4m'; Tone.Transport.bpm.value = 100;
 
-        // Click Sound Synthesizer
-        const clickSynth = new Tone.Synth({
-            oscillator: { type: 'triangle8' },
-            envelope: { attack: 0.01, decay: 0.1, sustain: 0.05, release: 0.2 },
-            volume: -10 // Quieter click sound
-        }).toDestination();
-
-        // Background Music Synthesizer & Melody
-        const musicSynth = new Tone.PolySynth(Tone.Synth, {
-            oscillator: { type: 'amsine', harmonicity: 1.2 }, // A slightly 'wobbly' sound
-            envelope: { attack: 0.05, decay: 0.2, sustain: 0.1, release: 0.5 },
-            volume: -20 // Background music should be quieter
-        }).toDestination();
-
-        const melody = [
-            { time: '0:0', note: 'C4', duration: '8n' },
-            { time: '0:1', note: 'E4', duration: '8n' },
-            { time: '0:2', note: 'G4', duration: '8n' },
-            { time: '0:3', note: 'E4', duration: '8n' },
-            { time: '1:0', note: 'D4', duration: '8n' },
-            { time: '1:1', note: 'F4', duration: '8n' },
-            { time: '1:2', note: 'A4', duration: '8n' },
-            { time: '1:3', note: 'F4', duration: '8n' },
-            { time: '2:0', note: 'C4', duration: '4n' },
-            { time: '2:2', note: 'G3', duration: '4n' },
-            { time: '3:0', note: 'E4', duration: '2n' },
-        ];
-
-        const musicPart = new Tone.Part((time, value) => {
-            musicSynth.triggerAttackRelease(value.note, value.duration, time);
-        }, melody);
-        musicPart.loop = true;
-        musicPart.loopEnd = '4m'; // Loop every 4 measures
-        Tone.Transport.bpm.value = 100; // Slower, more "brainrotty" tempo
-
-        async function initializeAudio() { // Made async
-            if (audioInitialized) return;
+        async function initializeAudio() {
+            if (audioInitialized || !Tone.context) return;
             console.log("Attempting to initialize audio. Current Tone.context state:", Tone.context.state);
             try {
-                await Tone.start(); // Tone.start() returns a promise, await its resolution
-                console.log("Tone.start() completed. Tone.context state:", Tone.context.state);
-
+                if (Tone.context.state !== 'running') { // Check if context needs to be started/resumed
+                    await Tone.start();
+                }
+                console.log("Tone.start() completed or context already running. Tone.context state:", Tone.context.state);
                 if (Tone.context.state === 'running') {
-                    if (Tone.Transport.state !== 'started') {
-                        Tone.Transport.start();
-                    }
-                    if (!musicPart.started) { // Check if part has already been started
-                        musicPart.start(0);
-                    }
+                    if (Tone.Transport.state !== 'started') Tone.Transport.start();
+                    if (!musicPart.started) musicPart.start(0);
                     audioInitialized = true;
-                    console.log("Audio Initialized successfully. Music should be playing. Transport state:", Tone.Transport.state);
-                } else {
-                    console.warn("Audio context did not start or is suspended. Current state:", Tone.context.state);
-                    showTemporaryMessage("Could not start audio. Please click again or check browser settings.");
-                }
-            } catch (e) {
-                console.error("Error during Tone.start():", e);
-                showTemporaryMessage("Error initializing audio.");
-            }
+                    console.log("Audio Initialized successfully.");
+                } else { console.warn("Audio context did not start. State:", Tone.context.state); }
+            } catch (e) { console.error("Error during Tone.start():", e); }
         }
-        
-        muteButton.addEventListener('click', async () => { // Make async
+        muteButton.addEventListener('click', async () => {
             soundsMuted = !soundsMuted;
-            if (soundsMuted) {
-                Tone.Destination.mute = true;
-                muteButton.textContent = '🔇 Sounds OFF';
-                console.log("Sounds Muted. Tone.Destination.mute:", Tone.Destination.mute);
-            } else {
-                Tone.Destination.mute = false;
-                muteButton.textContent = '🔊 Sounds ON';
-                console.log("Sounds Unmuted. Tone.Destination.mute:", Tone.Destination.mute);
-                if (!audioInitialized) { 
-                    await initializeAudio(); // Await the call
-                }
-            }
+            Tone.Destination.mute = soundsMuted;
+            muteButton.textContent = soundsMuted ? '🔇 Sounds OFF' : '🔊 Sounds ON';
+            if (!soundsMuted && !audioInitialized) await initializeAudio();
         });
 
-
-        // --- Local Storage and Data Loading ---
-        function saveGameState() {
-            try {
-                const upgradesToSave = {};
-                for (const key in upgrades) {
-                    upgradesToSave[key] = { level: upgrades[key].level };
+        // --- Firebase Authentication & Leaderboard ---
+        if (isFirebaseReady) {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    console.log("User signed in anonymously:", userId);
+                    fetchLeaderboard(); // Fetch leaderboard once user is authenticated
+                } else {
+                    signInAnonymously(auth).catch((error) => {
+                        console.error("Anonymous sign-in failed:", error);
+                        showTemporaryMessage("Could not connect to leaderboard service.");
+                        leaderboardDisplay.innerHTML = '<p class="text-center text-red-400">Leaderboard sign-in failed.</p>';
+                    });
                 }
-                const gameState = {
-                    score,
-                    upgrades: upgradesToSave
-                };
-                localStorage.setItem('brainrotClickerGameState', JSON.stringify(gameState));
+            });
+        }
+
+        async function submitScore() {
+            if (!isFirebaseReady || !userId) {
+                showTemporaryMessage("Not connected to leaderboard service.");
+                return;
+            }
+            const playerName = playerNameInput.value.trim() || "Anonymous Shark";
+            if (score <= 0) {
+                showTemporaryMessage("Click the shark to get a score first!");
+                return;
+            }
+
+            submitScoreButton.disabled = true;
+            submitScoreButton.textContent = "Submitting...";
+
+            const leaderboardPath = `artifacts/${GAME_INSTANCE_ID}/public/data/leaderboard`;
+            const playerScoreRef = doc(db, leaderboardPath, userId); // Use userId as document ID
+
+            try {
+                await setDoc(playerScoreRef, {
+                    name: playerName,
+                    score: Math.floor(score), // Store whole number
+                    timestamp: serverTimestamp() // For ordering or tie-breaking if needed
+                }, { merge: true }); // Merge to update if exists, or create if not
+
+                showTemporaryMessage(`Score submitted as ${playerName}!`);
+                localStorage.setItem('brainrotPlayerName', playerName); // Save name for next time
+                fetchLeaderboard(); // Refresh leaderboard
             } catch (error) {
-                console.error("Error saving game state to Local Storage:", error);
-                showTemporaryMessage("Could not save game progress!");
+                console.error("Error submitting score:", error);
+                showTemporaryMessage("Failed to submit score. Try again.");
+            } finally {
+                submitScoreButton.disabled = false;
+                submitScoreButton.textContent = "Submit Score";
             }
         }
 
-        function loadGameState() {
+        async function fetchLeaderboard() {
+            if (!isFirebaseReady) {
+                 leaderboardDisplay.innerHTML = '<p class="text-center text-gray-400">Leaderboard unavailable.</p>';
+                return;
+            }
+            leaderboardDisplay.innerHTML = '<p class="text-center text-gray-400">Fetching top scores...</p>';
+            const leaderboardPath = `artifacts/${GAME_INSTANCE_ID}/public/data/leaderboard`;
             try {
+                const q = query(collection(db, leaderboardPath), orderBy("score", "desc"), limit(10));
+                const querySnapshot = await getDocs(q);
+                const leaderboardData = [];
+                querySnapshot.forEach((doc) => {
+                    leaderboardData.push({ id: doc.id, ...doc.data() });
+                });
+                renderLeaderboard(leaderboardData);
+            } catch (error) {
+                console.error("Error fetching leaderboard:", error);
+                leaderboardDisplay.innerHTML = '<p class="text-center text-red-400">Could not load leaderboard.</p>';
+            }
+        }
+
+        function renderLeaderboard(data) {
+            if (!data || data.length === 0) {
+                leaderboardDisplay.innerHTML = '<p class="text-center text-gray-400">No scores yet. Be the first!</p>';
+                return;
+            }
+            let html = '';
+            data.forEach((entry, index) => {
+                html += `
+                    <div class="leaderboard-entry">
+                        <span class="leaderboard-rank">${index + 1}.</span>
+                        <span class="leaderboard-name">${entry.name ? entry.name.substring(0,15) : 'Unnamed'}</span>
+                        <span class="leaderboard-score">${formatNumber(entry.score)} 🧠</span>
+                    </div>
+                `;
+            });
+            leaderboardDisplay.innerHTML = html;
+        }
+
+
+        // --- Local Storage and Data Loading (for game state) ---
+        function saveGameState() { /* ... (same as before) ... */ 
+            try {
+                const upgradesToSave = {};
+                for (const key in upgrades) { upgradesToSave[key] = { level: upgrades[key].level }; }
+                const gameState = { score, upgrades: upgradesToSave };
+                localStorage.setItem('brainrotClickerGameState', JSON.stringify(gameState));
+            } catch (error) { console.error("Error saving game state:", error); }
+        }
+        function loadGameState() { /* ... (same as before, also load player name) ... */ 
+            try {
+                const savedName = localStorage.getItem('brainrotPlayerName');
+                if (savedName) playerNameInput.value = savedName;
+
                 const savedStateJSON = localStorage.getItem('brainrotClickerGameState');
                 if (savedStateJSON) {
                     const savedState = JSON.parse(savedStateJSON);
                     score = savedState.score || 0;
                     if (savedState.upgrades) {
                          for (const key in initialUpgrades) {
-                            if (savedState.upgrades[key]) {
-                                upgrades[key] = { ...initialUpgrades[key], level: savedState.upgrades[key].level || 0 };
-                            } else {
-                                upgrades[key] = { ...initialUpgrades[key] };
-                            }
+                            if (savedState.upgrades[key]) upgrades[key] = { ...initialUpgrades[key], level: savedState.upgrades[key].level || 0 };
+                            else upgrades[key] = { ...initialUpgrades[key] };
                         }
-                    } else {
-                        upgrades = JSON.parse(JSON.stringify(initialUpgrades));
-                    }
+                    } else upgrades = JSON.parse(JSON.stringify(initialUpgrades));
                     recalculateStatsFromUpgrades();
-                } else {
-                    initializeDefaultGameState();
-                }
-            } catch (error) {
-                console.error("Error loading game state from Local Storage:", error);
-                showTemporaryMessage("Could not load saved game!");
-                initializeDefaultGameState();
-            }
-            updateAllDisplays();
-            renderUpgrades();
+                } else initializeDefaultGameState();
+            } catch (error) { console.error("Error loading game state:", error); initializeDefaultGameState(); }
+            updateAllDisplays(); renderUpgrades();
+        }
+        function initializeDefaultGameState() { /* ... (same as before) ... */
+            score = 0; upgrades = JSON.parse(JSON.stringify(initialUpgrades)); recalculateStatsFromUpgrades();
         }
 
-        function initializeDefaultGameState() {
-            score = 0;
-            upgrades = JSON.parse(JSON.stringify(initialUpgrades));
-            recalculateStatsFromUpgrades();
-        }
 
         // --- Game Logic ---
-        async function handleSharkClick(event) { // Make async
-            if (!audioInitialized && !soundsMuted) { 
-                await initializeAudio(); // Await the call
-            }
-            if (!soundsMuted && audioInitialized) { // Ensure audio is initialized before playing click sound
-                clickSynth.triggerAttackRelease('C5', '16n', Tone.now()); 
-            }
-
-            score += clickPower;
-            createClickEffect(event.clientX, event.clientY, clickPower);
-            updateScoreDisplay();
-            renderUpgrades();
-
-            sharkImage.style.transform = 'scale(0.95) rotate(-2deg)';
-            setTimeout(() => {
-                sharkImage.style.transform = 'scale(1) rotate(0deg)';
-            }, 80);
+        async function handleSharkClick(event) { /* ... (same as before) ... */
+            if (!audioInitialized && !soundsMuted) await initializeAudio();
+            if (!soundsMuted && audioInitialized) clickSynth.triggerAttackRelease('C5', '16n', Tone.now());
+            score += clickPower; createClickEffect(event.clientX, event.clientY, clickPower); updateScoreDisplay(); renderUpgrades();
+            sharkImage.style.transform = 'scale(0.95) rotate(-2deg)'; setTimeout(() => { sharkImage.style.transform = 'scale(1) rotate(0deg)'; }, 80);
         }
-
-        function createClickEffect(x, y, amount) {
-            const effect = document.createElement('div');
-            effect.classList.add('click-effect');
-            effect.textContent = `+${formatNumber(amount)}🧠`;
-            effect.style.left = `${x - 20}px`;
-            effect.style.top = `${y - 35}px`;
-            document.body.appendChild(effect);
-            effect.addEventListener('animationend', () => effect.remove());
+        function createClickEffect(x, y, amount) { /* ... (same as before) ... */
+            const effect = document.createElement('div'); effect.classList.add('click-effect'); effect.textContent = `+${formatNumber(amount)}🧠`; effect.style.left = `${x - 20}px`; effect.style.top = `${y - 35}px`; document.body.appendChild(effect); effect.addEventListener('animationend', () => effect.remove());
         }
-
-        function calculateUpgradeCost(baseCost, level) {
+        function calculateUpgradeCost(baseCost, level) { /* ... (same as before) ... */
             return Math.floor(baseCost * Math.pow(1.18, level));
         }
-
-        function buyUpgrade(upgradeId) {
-            const upgrade = upgrades[upgradeId];
-            if (!upgrade) return;
-            const currentCost = calculateUpgradeCost(upgrade.baseCost, upgrade.level);
-            if (score >= currentCost) {
-                score -= currentCost;
-                upgrade.level++;
-                recalculateStatsFromUpgrades();
-                updateAllDisplays();
-                renderUpgrades();
-                saveGameState();
-            } else {
-                showTemporaryMessage("Not enough Brain Points! 🧠");
-            }
+        function buyUpgrade(upgradeId) { /* ... (same as before) ... */
+            const upgrade = upgrades[upgradeId]; if (!upgrade) return; const currentCost = calculateUpgradeCost(upgrade.baseCost, upgrade.level);
+            if (score >= currentCost) { score -= currentCost; upgrade.level++; recalculateStatsFromUpgrades(); updateAllDisplays(); renderUpgrades(); saveGameState();
+            } else showTemporaryMessage("Not enough Brain Points! 🧠");
         }
-
-        function recalculateStatsFromUpgrades() {
-            clickPower = 1 + Object.values(upgrades)
-                .filter(u => u.type === 'click')
-                .reduce((sum, u) => sum + (u.power * u.level), 0);
-            bps = Object.values(upgrades)
-                .filter(u => u.type === 'bps')
-                .reduce((sum, u) => sum + (u.power * u.level), 0);
+        function recalculateStatsFromUpgrades() { /* ... (same as before) ... */
+            clickPower = 1 + Object.values(upgrades).filter(u => u.type === 'click').reduce((sum, u) => sum + (u.power * u.level), 0);
+            bps = Object.values(upgrades).filter(u => u.type === 'bps').reduce((sum, u) => sum + (u.power * u.level), 0);
         }
-
         const SAVE_INTERVAL = 5000;
-
-        function gameLoop() {
-            if (bps > 0) {
-                score += bps / 10;
-                updateScoreDisplay();
-                if (Math.random() < 0.05) {
-                   renderUpgrades();
-                }
-            }
+        function gameLoop() { /* ... (same as before) ... */
+            if (bps > 0) { score += bps / 10; updateScoreDisplay(); if (Math.random() < 0.05) renderUpgrades(); }
         }
 
         // --- UI Updates ---
-        function formatNumber(num) {
-            num = Math.floor(num);
-            if (num < 1000) return num.toString();
-            if (num < 1000000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-            if (num < 1000000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-            return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
+        function formatNumber(num) { /* ... (same as before) ... */
+            num = Math.floor(num); if (num < 1000) return num.toString(); if (num < 1000000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K'; if (num < 1000000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'; return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
         }
-
         function updateScoreDisplay() { scoreDisplay.textContent = formatNumber(score); }
         function updateClickPowerDisplay() { clickPowerDisplay.textContent = formatNumber(clickPower); }
         function updateBpsDisplay() { bpsDisplay.textContent = formatNumber(bps); }
         function updateAllDisplays() { updateScoreDisplay(); updateClickPowerDisplay(); updateBpsDisplay(); }
-
-        function renderUpgrades() {
+        function renderUpgrades() { /* ... (same as before, ensure no conflict with leaderboard rendering) ... */
             upgradesContainer.innerHTML = '';
             for (const id in upgrades) {
-                const upgrade = upgrades[id];
-                const currentCost = calculateUpgradeCost(upgrade.baseCost, upgrade.level);
-                const button = document.createElement('button');
-                button.className = 'upgrade-button group';
-                button.disabled = score < currentCost;
-                button.onclick = () => buyUpgrade(id);
-                button.innerHTML = `
-                    <div class="upgrade-info">
-                        <div class="upgrade-name-desc">
-                            <strong>${upgrade.icon} ${upgrade.name}</strong>
-                            <p class="text-xs opacity-80">${upgrade.description}</p>
-                            <p class="upgrade-level">Level: ${upgrade.level}</p>
-                        </div>
-                        <div class="upgrade-cost">
-                            Cost: ${formatNumber(currentCost)} <span class="currency-symbol">🧠</span>
-                        </div>
-                    </div>`;
+                const upgrade = upgrades[id]; const currentCost = calculateUpgradeCost(upgrade.baseCost, upgrade.level); const button = document.createElement('button'); button.className = 'upgrade-button group'; button.disabled = score < currentCost; button.onclick = () => buyUpgrade(id);
+                button.innerHTML = `<div class="upgrade-info"><div class="upgrade-name-desc"><strong>${upgrade.icon} ${upgrade.name}</strong><p class="text-xs opacity-80">${upgrade.description}</p><p class="upgrade-level">Level: ${upgrade.level}</p></div><div class="upgrade-cost">Cost: ${formatNumber(currentCost)} <span class="currency-symbol">🧠</span></div></div>`;
                 upgradesContainer.appendChild(button);
             }
         }
-
-        function showTemporaryMessage(message) {
-            messageBox.textContent = message;
-            messageBox.classList.add('show');
-            setTimeout(() => messageBox.classList.remove('show'), 2500);
+        function showTemporaryMessage(message) { /* ... (same as before) ... */
+            messageBox.textContent = message; messageBox.classList.add('show'); setTimeout(() => messageBox.classList.remove('show'), 2500);
         }
 
         // --- Initialize Game ---
-        sharkImage.addEventListener('click', handleSharkClick); // Will become async
-        loadGameState();
+        sharkImage.addEventListener('click', handleSharkClick);
+        if (isFirebaseReady) { // Only add listener if Firebase initialized
+          submitScoreButton.addEventListener('click', submitScore);
+        } else {
+            submitScoreButton.disabled = true;
+            submitScoreButton.textContent = "Leaderboard N/A";
+        }
+        
+        loadGameState(); // Load local game state
+        // fetchLeaderboard(); // Initial fetch is now triggered by auth state change
         setInterval(gameLoop, 100);
         setInterval(saveGameState, SAVE_INTERVAL);
+
     </script>
 </body>
 </html>
