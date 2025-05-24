@@ -286,12 +286,12 @@
         // --- Canvas Background Animation ---
         let particles = [];
         function resizeCanvas() {
-            if (!sharkArea || !sharkBackgroundCanvas) return; // Guard
+            if (!sharkArea || !sharkBackgroundCanvas) return; 
             sharkBackgroundCanvas.width = sharkArea.clientWidth;
             sharkBackgroundCanvas.height = sharkArea.clientHeight;
         }
         function initParticles() {
-            if (!sharkBackgroundCanvas) return; // Guard
+            if (!sharkBackgroundCanvas) return; 
             particles = [];
             const numParticles = 50; 
             for (let i = 0; i < numParticles; i++) {
@@ -306,7 +306,7 @@
             }
         }
         function drawParticles() {
-            if (!canvasCtx || !sharkBackgroundCanvas) return; // Guard
+            if (!canvasCtx || !sharkBackgroundCanvas) return; 
             canvasCtx.clearRect(0, 0, sharkBackgroundCanvas.width, sharkBackgroundCanvas.height);
             particles.forEach(p => {
                 canvasCtx.beginPath();
@@ -325,27 +325,37 @@
             }
             requestAnimationFrame(animateCanvasBackground);
         }
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            initParticles(); 
-        });
-        if(sharkArea && sharkBackgroundCanvas){
-            resizeCanvas();
-            initParticles();
-            animateCanvasBackground();
-        }
-
+        
         // --- Audio Functions ---
         async function initializeAudio() {
-            if (audioInitialized || !Tone.context) return;
+            if (audioInitialized || typeof Tone === 'undefined' || !Tone.context) { // Added typeof Tone check
+                if(typeof Tone === 'undefined' || !Tone.context) console.warn("Tone.js or Tone.context not available for audio initialization.");
+                return;
+            }
+            console.log("Attempting to initialize audio. Current Tone.context state:", Tone.context.state);
             try {
-                if (Tone.context.state !== 'running') await Tone.start();
+                if (Tone.context.state !== 'running') {
+                    await Tone.start();
+                    console.log("Tone.start() called. New Tone.context state:", Tone.context.state);
+                }
+
                 if (Tone.context.state === 'running') {
-                    if (Tone.Transport.state !== 'started') Tone.Transport.start();
-                    if (!musicPart.started) musicPart.start(0);
-                    audioInitialized = true; console.log("Audio Initialized.");
-                } else console.warn("Audio context did not start.");
-            } catch (e) { console.error("Error during Tone.start():", e); }
+                    if (Tone.Transport.state !== 'started') {
+                        Tone.Transport.start();
+                        console.log("Tone.Transport started.");
+                    }
+                    if (!musicPart.started) {
+                        musicPart.start(0); 
+                        console.log("MusicPart started.");
+                    }
+                    audioInitialized = true; 
+                    console.log("Audio Initialized successfully. Music should be playing.");
+                } else {
+                    console.warn("Audio context is not running after attempting to start. State:", Tone.context.state);
+                }
+            } catch (e) {
+                console.error("Error during audio initialization:", e);
+            }
         }
         
         // --- Firebase Functions ---
@@ -425,17 +435,20 @@
             if (!soundsMuted && audioInitialized) {
                 clickSynth.triggerAttackRelease('C5', '16n', Tone.now()); 
             }
-            sharkImage.classList.add('shark-jiggle');
-            setTimeout(() => sharkImage.classList.remove('shark-jiggle'), 200);
-            const shockwave = document.createElement('div');
-            shockwave.classList.add('shockwave');
-            const rect = sharkArea.getBoundingClientRect();
-            const clickXInArea = event.clientX - rect.left;
-            const clickYInArea = event.clientY - rect.top;
-            shockwave.style.left = `${clickXInArea - 25}px`; 
-            shockwave.style.top = `${clickYInArea - 25}px`;
-            sharkArea.appendChild(shockwave);
-            setTimeout(() => shockwave.remove(), 600);
+            if (sharkImage) sharkImage.classList.add('shark-jiggle'); // Guard sharkImage
+            setTimeout(() => { if (sharkImage) sharkImage.classList.remove('shark-jiggle'); }, 200);
+            
+            if (sharkArea) { // Guard sharkArea
+                const shockwave = document.createElement('div');
+                shockwave.classList.add('shockwave');
+                const rect = sharkArea.getBoundingClientRect();
+                const clickXInArea = event.clientX - rect.left;
+                const clickYInArea = event.clientY - rect.top;
+                shockwave.style.left = `${clickXInArea - 25}px`; 
+                shockwave.style.top = `${clickYInArea - 25}px`;
+                sharkArea.appendChild(shockwave);
+                setTimeout(() => shockwave.remove(), 600);
+            }
             score += clickPower; 
             createClickEffect(event.clientX, event.clientY, clickPower); 
             updateScoreDisplay(); 
@@ -543,7 +556,20 @@
         window.buyUpgrade = buyUpgrade;
 
         // --- Initialize Game ---
+        if (muteButton) { // Guard muteButton
+            muteButton.addEventListener('click', async () => {
+                soundsMuted = !soundsMuted; 
+                if (typeof Tone !== 'undefined') Tone.Destination.mute = soundsMuted; // Guard Tone
+                muteButton.textContent = soundsMuted ? '🔇 Sounds OFF' : '🔊 Sounds ON';
+                console.log("Mute toggled. SoundsMuted:", soundsMuted);
+                if (!soundsMuted && !audioInitialized) {
+                    await initializeAudio();
+                }
+            });
+        }
+
         if (sharkImage) sharkImage.addEventListener('click', handleSharkClick);
+        
         if (isFirebaseReady && submitScoreButton) {
             submitScoreButton.addEventListener('click', submitScore);
         } else if (submitScoreButton) {
